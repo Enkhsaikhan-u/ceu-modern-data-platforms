@@ -15,10 +15,10 @@ Build a dbt project analyzing global airport data on Snowflake.
 
 ### Step 1: Initialize the dbt Project
 
-* Fork this repository: https://github.com/zoltanctoth/ceu-dbt-assignment-repo 
+* Fork this repository as a _private_ repository: https://github.com/zoltanctoth/ceu-dbt-assignment-repo 
 * Execute setup steps if working locally (see `README.md` in your fork)
 * Add your student id to `README.md`
-* Create a new dbt project called `airstats`.
+* Create a new dbt project called `airstats`
 
 ### Step 2: Configure the Connection
 
@@ -79,6 +79,8 @@ dbt debug
 
 You should see "All checks passed!" if the connection is configured correctly.
 
+Once done **Add `airstats` to git**, ensure that your `profiles.yml` is added too (this is OK as it's an assignment in a private repository; never add credentials to git in a real-world project)
+
 ### Step 4: Clean Up Example Files
 
 Remove the example models that dbt created by default:
@@ -98,8 +100,7 @@ models:
 
 ---
 
-
-### Part 2: Data Exploration (Optional)
+## Part 2: Data Exploration (Optional)
 
 Before building models, explore the data in Snowflake, here are a few SQLs to get you started
 
@@ -123,6 +124,7 @@ SELECT * FROM airport_comments LIMIT 10;
 ```
 
 ---
+
 ## Part 3: Define Sources
 
 The AIRSTATS database has been set up in Snowflake with the following tables in the `RAW` schema:
@@ -153,19 +155,88 @@ dbt compile
 
 If there are no errors, your sources are configured correctly.
 
-## Next Steps
+---
 
-In the following exercises, you will:
-1. Create staging models (src layer) that rename and select columns
-2. Create dimension models that filter and aggregate data
-3. Create a final analytics mart that joins everything together
+## Part 4: Staging Models (src layer)
 
-_I'm going to send you the instructions by EOD 20 Jan 2026._
+The staging layer (src) is responsible for:
+- Selecting only the columns we need from source tables
+- Renaming columns to follow consistent naming conventions
+- Referencing sources using the dbt `source()` function
 
-### Submission
+Create a folder `models/src/` for these models.
 
-* Create a private git repository and invite `zoltanctoth` and `nai-coder` as collaborator
-* 
-Submission deadline: 11:59 pm, Sunday 25 January, 2026
-Submission through Moodle.
+### Exercise 2: src_airports
+
+Create `models/src/src_airports.sql`
+
+**Requirements:**
+1. Use a CTE to reference the `airports` source
+2. Select and rename the following columns:
+
+| Source Column | Target Column |
+|---------------|---------------|
+| `ident` | `airport_ident` |
+| `type` | `airport_type` |
+| `name` | `airport_name` |
+| `latitude_deg` | `airport_lat` |
+| `longitude_deg` | `airport_long` |
+| `continent` | `continent` (no rename) |
+| `iso_country` | `iso_country` (no rename) |
+| `iso_region` | `iso_region` (no rename) |
+| `scheduled_service` | `scheduled_service` (no rename) |
+
+### Exercise 3: src_airport_comments
+
+Create `models/src/src_airport_comments.sql`
+
+**Requirements:**
+1. Use a CTE to reference the `airport_comments` source
+2. Select and rename the following columns:
+
+| Source Column | Target Column |
+|---------------|---------------|
+| `id` | `comment_id` |
+| `airport_ident` | `airport_ident` (no rename) |
+| `date` | `comment_date` |
+| `member_nickname` | `member_nickname` (no rename) |
+| `subject` | `comment_subject` |
+| `body` | `comment_body` |
+
+### Exercise 4: src_runways
+
+Create `models/src/src_runways.sql`
+
+**Requirements:**
+1. Use a CTE to reference the `runways` source
+2. Select and rename the following columns:
+
+| Source Column | Target Column |
+|---------------|---------------|
+| `id` | `runway_id` |
+| `airport_ref` | `airport_ref` (no rename) |
+| `airport_ident` | `airport_ident` (no rename) |
+| `length_ft` | `runway_length_ft` |
+| `width_ft` | `runway_width_ft` |
+| `surface` | `runway_surface` |
+| `lighted` | `runway_lighted` |
+| `closed` | `runway_closed` |
+
+### Verify Your Models
+
+Run dbt to build the staging models:
+
+```sh
+dbt run
+```
+
+All three models should complete successfully.
+
+## Submission
+
+_I'm going to send you the complete assignment instructions by EOD 20 Jan 2026._
+
+* Invite `zoltanctoth` and `nai-coder` as collaborators to your private repository
+* Submission deadline: 11:59 pm, Sunday 25 January, 2026
+* Submission through Moodle.
 
